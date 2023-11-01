@@ -1,5 +1,88 @@
 from tkinter import *
 import time
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+import imaplib
+import email
+from email.header import decode_header
+
+#email functionality
+
+# Gmail account details for sending
+smtp_server = 'smtp.gmail.com'
+smtp_port = 587
+email_address = 'shawnb.nimal22@gmail.com'  # Replace with your Gmail address
+password = ''  # Replace with your Gmail password or App Password
+
+# Gmail account details for receiving
+imap_server = 'imap.gmail.com'
+imap_port = 993
+
+# Function to send an email
+def send_email():
+    subject = 'Hello from Python'
+    message = 'This is a test email from Python.'
+    sender = email_address
+    receiver = 'shawn.nimal@gmail.com'  # Replace with the recipient's email address
+
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = receiver
+    msg['Subject'] = subject
+    msg.attach(MIMEText(message, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(email_address, password)
+        server.sendmail(sender, receiver, msg.as_string())
+        print('Email sent successfully')
+        server.quit()
+    except Exception as e:
+        print(f'Error sending email: {str(e)}')
+
+# Function to receive and display the first 5 emails from newest to oldest
+def receive_and_display_emails():
+    try:
+        mail = imaplib.IMAP4_SSL(imap_server, imap_port)
+        mail.login(email_address, password)
+    except Exception as e:
+        print(f'Error connecting to the IMAP server: {str(e)}')
+        exit(1)
+
+    mailbox = "INBOX"
+    mail.select(mailbox)
+
+    status, email_ids = mail.search(None, "ALL")
+
+    if status == "OK":
+        email_id_list = email_ids[0].split()
+        # Display only the first 5 emails
+        for email_id in email_id_list[-5:]:
+            status, email_data = mail.fetch(email_id, "(RFC822)")
+            if status == "OK":
+                raw_email = email_data[0][1]
+                msg = email.message_from_bytes(raw_email)
+
+                subject_header = msg["Subject"]
+                subject = ""
+                if subject_header:
+                    subject, _ = decode_header(subject_header)[0]
+
+                sender_header = msg["From"]
+                sender = ""
+                if sender_header:
+                    sender, _ = decode_header(sender_header)[0]
+
+                print(f"Subject: {subject}")
+                print(f"From: {sender}")
+                print("\n")
+
+    mail.close()
+    mail.logout()
+
+#use of send email and receive email functions
 
 def update_time():
     current_time = time.strftime('%H:%M:%S')
