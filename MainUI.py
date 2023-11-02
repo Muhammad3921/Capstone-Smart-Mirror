@@ -5,8 +5,49 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import imaplib
 import email
+from datetime import datetime, timezone
 from email.header import decode_header
+from nylas import APIClient
+CALENDAR_ID = ""
+#Calendar func
+nylas = APIClient(
+   "",
+   "",
+   ""
+)
 
+def convert_to_unix_timestamp(timedate):
+    tempdate = timedate.split(",")
+    dt = datetime(tempdate[0], tempdate[1], tempdate[2], tempdate[3], tempdate[4], 0, tzinfo=timezone.utc)
+    timestamp = int(dt.timestamp())
+    return timestamp
+
+def read_calendar_events():
+    events = nylas.events.where(calendar_id=CALENDAR_ID).all(limit=5)
+    for event in events:
+        print("Title: {} | When: {} | Participants: {}".format(
+        event.title, event.when, event.participants
+    ))
+    
+def create_new_calendar_event(title,loc,strt,end):
+    event = nylas.events.create()
+    event.title = title
+    event.location = loc
+    starttime = strt
+    endtime = end
+    newstrt = convert_to_unix_timestamp(starttime)
+    newend = convert_to_unix_timestamp(endtime) #implement the participants
+    event.when = {"start_time": newstrt, "end_time": newend}
+    event.participants = [{"name": "My Nylas Friend", 'email': 'swag@nylas.com'}]
+
+
+    event.calendar_id = CALENDAR_ID
+
+    event.save(notify_participants=True)   
+
+#create_new_calendar_event()
+#read_calendar_events()
+    
 #email functionality
 
 # Gmail account details for sending
