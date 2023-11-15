@@ -204,20 +204,7 @@ Label(Tasks_frame, text= "Quick Tasks", font= ('Helvetica 20'), fg='black', bg= 
 Label(Tasks_frame, text= "How long to work", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=1, column=0,padx= (10, 0), pady=(5, 2))
 Label(Tasks_frame, text= "Weather tonight", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=2, column=0,padx= (10, 0), pady=(5, 2))
 Label(Tasks_frame, text= "Set reminder to do work", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=3, column=0,padx= (10, 0), pady=(5, 2))
-""" # Create tool bar frame
-tool_bar = Frame(left_frame, width=180, height=185)
-tool_bar.grid(row=2, column=0, padx=5, pady=5)
 
-# Example labels that serve as placeholders for other widgets
-Label(tool_bar, text="Tools", relief=RAISED).grid(row=0, column=0, padx=5, pady=3, ipadx=10)  # ipadx is padding inside the Label widget
-Label(tool_bar, text="Filters", relief=RAISED).grid(row=0, column=1, padx=5, pady=3, ipadx=10)
-
-# Example labels that could be displayed under the "Tool" menu
-Label(tool_bar, text="Select").grid(row=1, column=0, padx=5, pady=5)
-Label(tool_bar, text="Crop").grid(row=2, column=0, padx=5, pady=5)
-Label(tool_bar, text="Rotate & Flip").grid(row=3, column=0, padx=5, pady=5)
-Label(tool_bar, text="Resize").grid(row=4, column=0, padx=5, pady=5)
-Label(tool_bar, text="Exposure").grid(row=5, column=0, padx=5, pady=5)  """
 
 #if statement which constantly returns true to make the timer refresh and tick
 if __name__ == "__main__":
