@@ -8,6 +8,8 @@ import email
 from datetime import datetime, timezone
 from email.header import decode_header
 from nylas import APIClient
+from weather import *
+
 CALENDAR_ID = ""
 #Calendar func
 nylas = APIClient(
@@ -191,6 +193,7 @@ clock_label = Label(Clock_frame, font= ('Helvetica 30'), fg='black', bg= 'blue')
 clock_label.grid(row=0, column=0,padx=35, pady=25, sticky=NSEW)
 
 Weather_frame = Frame(right_frame, width=230, height=200, bg='blue')
+Weather_frame = updateGUI(getForecast("Toronto"), Weather_frame)
 Weather_frame.grid(row=1, column=0, padx=10, pady=5, sticky=NSEW)
 
 Maps_frame = Frame(right_frame, width=230, height=490, bg='blue')
