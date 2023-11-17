@@ -4,10 +4,6 @@ import face_recognition
 import os
 import time
 
-fn = 'screenshot.jpg'
-prev_time = os.path.getmtime(fn)
-t = prev_time
-
 t1 = face_recognition.load_image_file("training/nyle_train1.jpg")
 t2 = face_recognition.load_image_file("training/nyle_train2.jpg")
 t3 = face_recognition.load_image_file("training/nyle_train3.png")
