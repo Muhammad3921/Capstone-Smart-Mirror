@@ -10,7 +10,45 @@ from email.header import decode_header
 from nylas import APIClient
 from weather import *
 
+def switch_to_calendar(root, name):
+    root.destroy() # Properly destroy the current Tkinter window
+    # Import the Main UI code
+    from calendarpage import calendarPage
+    
+    # Create a new window for the second page
+    cal = Tk()
+
+    # Execute the second page code
+    calendarPage(cal, name)
+
+def switch_to_maps(root, name):
+    root.destroy() # Properly destroy the current Tkinter window
+    # Import the Main UI code
+    from maps import mapsPage
+    
+    # Create a new window for the second page
+    map = Tk()
+
+    # Execute the second page code
+    mapsPage(map, name)
+
+def switch_to_remin(root, name):
+    root.destroy() # Properly destroy the current Tkinter window
+    # Import the Main UI code
+    from reminder import reminderPage
+    
+    # Create a new window for the second page
+    rem = Tk()
+
+    # Execute the second page code
+    reminderPage(rem, name)
+
 def main_ui_code(root, welcome_name):
+    root.title("Smart Mirror Main")  # title of the GUI window
+    root.geometry("1060x1300")  # specify the max size the window can expand to
+    root.config(bg="black")  # specify background color
+    root.wm_attributes('-transparentcolor', '#ab23ff')
+
     CALENDAR_ID = ""
     #Calendar func
     nylas = APIClient(
@@ -202,6 +240,9 @@ def main_ui_code(root, welcome_name):
     Label(Tasks_frame, text= "Set reminder to do work", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=3, column=0,padx= (10, 0), pady=(5, 2))
 
 
+    switch_button = Button(left_frame, text="Switch to calendar", command=lambda: switch_to_calendar(root, welcome_name)).grid(row=4, column=0,padx= (10, 0), pady=(5, 2))
+    switch_button1 = Button(left_frame, text="Switch to reminders", command=lambda: switch_to_remin(root, welcome_name)).grid(row=5, column=0,padx= (10, 0), pady=(5, 2))
+    switch_button1 = Button(left_frame, text="Switch to maps", command=lambda: switch_to_maps(root, welcome_name)).grid(row=6, column=0,padx= (10, 0), pady=(5, 2))
     #if statement which constantly returns true to make the timer refresh and tick
     if True:
         update_time()
