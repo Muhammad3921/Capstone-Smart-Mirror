@@ -26,10 +26,10 @@ def updateGUI(data: dict, frame: Frame) -> Frame:
     urllib.request.urlretrieve(icon_url, "icon.png")
     condition_icon = ImageTk.PhotoImage(Image.open("icon.png"))
 
-    region_label = Label(frame, text = region).pack()
-    temp_label = Label(frame, text = temp).pack()
-    feelsLike_label = Label(frame, text = feelsLike).pack()
-    conditionIcon_label = Label(frame, image = condition_icon).pack()
-    condition_label = Label(frame, text = condition_text).pack()
+    region_label = Label(frame, text = region, font= ('Helvetica 12'), fg='black', bg= 'blue').pack()
+    temp_label = Label(frame, text = temp, fg='black', bg= 'blue').pack()
+    feelsLike_label = Label(frame, text = feelsLike, fg='black', bg= 'blue').pack()
+    conditionIcon_label = Label(frame, image = condition_icon, fg='black', bg= 'blue').pack()
+    condition_label = Label(frame, text = condition_text, fg='black', bg= 'blue').pack()
 
     return frame
