@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from email.header import decode_header
 from nylas import APIClient
 from weather import *
+from micInput import *
 
 CALENDAR_ID = ""
 #Calendar func
@@ -208,9 +209,22 @@ Label(Tasks_frame, text= "How long to work", font= ('Helvetica 12'), fg='black',
 Label(Tasks_frame, text= "Weather tonight", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=2, column=0,padx= (10, 0), pady=(5, 2))
 Label(Tasks_frame, text= "Set reminder to do work", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=3, column=0,padx= (10, 0), pady=(5, 2))
 
+#MIC INPUT
+def runMic():
+    while True:
+        print("in while loop")
+        if(listen()):
+            getVoiceCommand()
+            response = transcribeCommand()
+            print(response["text"])
+
+            if("bye" in response["text"].lower()):
+                print("goodbye sire")
+                break
 
 #if statement which constantly returns true to make the timer refresh and tick
 if __name__ == "__main__":
     update_time()
+    root.after(0, runMic)
     root.mainloop()
     
