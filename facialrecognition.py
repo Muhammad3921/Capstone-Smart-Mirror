@@ -65,7 +65,7 @@ def update_video():
         # Save a screenshot when a face is detected
         cv2.imwrite('screenshot.jpg', frame)
         counter = counter+1
-        print(counter)
+        #print(counter)
 
     # Display the resulting frame in the Tkinter window
     frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -76,7 +76,7 @@ def update_video():
     
     # Call update_video after 1 ms (you can adjust the delay)
     root.after(1, update_video)
-    if counter >= 10:
+    if counter >= 30:
         counter = 0
         recognize_face()
 
@@ -95,7 +95,7 @@ def recognize_face():
 
         for name, encodings in all_encodings.items():
             # Compare the current face with all encodings for the current name
-            results = face_recognition.compare_faces(encodings, CurrentFace)
+            results = face_recognition.compare_faces(encodings, CurrentFace, 0.6)
             average_result = sum(results) / len(results)
 
             if average_result > max_average_result:
@@ -109,11 +109,8 @@ def recognize_face():
             # Check if file with the same name exists
             existing_files = os.listdir(encoding_directory)
             existing_names = [file.split('_')[0] for file in existing_files]
-            count = 1
-            name = recognized_name
-            while name in existing_names:
-                name = f"{name}_{count}"  # Append number to the name
-                count += 1
+            count = len(existing_names)
+            name = f"{recognized_name}_{count}"  # Append number to the name
             encoding_file_path = os.path.join(encoding_directory, f"{name}_encoding.pkl")
             try:
                 with open(encoding_file_path, "wb") as file:
@@ -130,15 +127,6 @@ def recognize_face():
             name = name.lower()
             encoding_directory = f"encoding/{name}/"
             os.makedirs(encoding_directory, exist_ok=True)  # Create directory if it doesn't exist
-            
-            # Check if file with the same name exists
-            existing_files = os.listdir(encoding_directory)
-            existing_names = [file.split('_')[0] for file in existing_files]
-            count = 1
-            while name in existing_names:
-                name = f"{name}_{count}"  # Append number to the name
-                count += 1
-            
             encoding_file_path = os.path.join(encoding_directory, f"{name}_encoding.pkl")
             with open(encoding_file_path, "wb") as file:
                 pickle.dump(CurrentFace, file)  # Save the encoding dump
