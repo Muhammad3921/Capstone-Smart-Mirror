@@ -9,6 +9,69 @@ from datetime import datetime, timezone
 from email.header import decode_header
 from nylas import APIClient
 from weather import *
+import os
+from dotenv import load_dotenv
+import pytz
+
+load_dotenv()
+
+CALENDAR_ID = os.getenv("CALENDAR_ID")
+#Calendar func
+nylas = APIClient(
+   os.getenv("NYLAS1"),
+   os.getenv("NYLAS2"),
+   os.getenv("NYLAS3")
+)
+
+def convert_to_unix_timestamp(timedate):
+    tempdate = timedate.split(",")
+    dt = datetime(tempdate[0], tempdate[1], tempdate[2], tempdate[3], tempdate[4], 0, tzinfo=timezone.utc)
+    timestamp = int(dt.timestamp())
+    return timestamp
+
+
+def read_calendar_events(today):
+    events_list = []
+    events = nylas.events.where(calendar_id=CALENDAR_ID).all(limit=5)
+    for event in events:
+        utc_datetime = datetime.utcfromtimestamp(event.when['start_time'])
+
+        utc_timezone = pytz.timezone('UTC')
+        utc_datetime = utc_timezone.localize(utc_datetime)
+
+        # Convert to Eastern Time (EST)
+        est_timezone = pytz.timezone('US/Eastern')
+        est_datetime = utc_datetime.astimezone(est_timezone)
+
+        event_start_date = est_datetime.date()
+
+                # Set the UTC time zone
+        
+        if event_start_date == today:
+            event_dict = {
+            "Title": event.title,
+            "When": event.when,
+            "Participants": event.participants
+            }
+            events_list.append(event_dict)
+    return events_list
+    
+def create_new_calendar_event(title,loc,strt,end):
+    event = nylas.events.create()
+    event.title = title
+    event.location = loc
+    starttime = strt
+    endtime = end
+    newstrt = convert_to_unix_timestamp(starttime)
+    newend = convert_to_unix_timestamp(endtime) #implement the participants
+    event.when = {"start_time": newstrt, "end_time": newend}
+    event.participants = [{"name": "My Nylas Friend", 'email': 'swag@nylas.com'}]
+
+
+    event.calendar_id = CALENDAR_ID
+
+    event.save(notify_participants=True)   
+
 
 def switch_to_calendar(root, name):
     root.destroy() # Properly destroy the current Tkinter window
@@ -48,43 +111,6 @@ def main_ui_code(root, welcome_name):
     root.geometry("1060x1300")  # specify the max size the window can expand to
     root.config(bg="black")  # specify background color
     root.wm_attributes('-transparentcolor', '#ab23ff')
-
-    CALENDAR_ID = ""
-    #Calendar func
-    nylas = APIClient(
-    "",
-    "",
-    ""
-    )
-
-    def convert_to_unix_timestamp(timedate):
-        tempdate = timedate.split(",")
-        dt = datetime(tempdate[0], tempdate[1], tempdate[2], tempdate[3], tempdate[4], 0, tzinfo=timezone.utc)
-        timestamp = int(dt.timestamp())
-        return timestamp
-
-    def read_calendar_events():
-        events = nylas.events.where(calendar_id=CALENDAR_ID).all(limit=5)
-        for event in events:
-            print("Title: {} | When: {} | Participants: {}".format(
-            event.title, event.when, event.participants
-        ))
-        
-    def create_new_calendar_event(title,loc,strt,end):
-        event = nylas.events.create()
-        event.title = title
-        event.location = loc
-        starttime = strt
-        endtime = end
-        newstrt = convert_to_unix_timestamp(starttime)
-        newend = convert_to_unix_timestamp(endtime) #implement the participants
-        event.when = {"start_time": newstrt, "end_time": newend}
-        event.participants = [{"name": "My Nylas Friend", 'email': 'swag@nylas.com'}]
-
-
-        event.calendar_id = CALENDAR_ID
-
-        event.save(notify_participants=True)   
 
     #create_new_calendar_event()
     #read_calendar_events()
@@ -171,6 +197,8 @@ def main_ui_code(root, welcome_name):
         clock_label.config(text=current_time)
         root.after(1000, update_time)  # Update every 1000 milliseconds (1 second)
 
+    events = read_calendar_events(datetime.now().date())
+
     #Main layout frames
     left_frame = Frame(root, width=250, height=950, bg='grey')
     left_frame.grid(row=0, column=0, padx=10, pady=5,sticky=NSEW )
@@ -194,17 +222,48 @@ def main_ui_code(root, welcome_name):
     Calendar_frame = Frame(left_frame, width=230, height=570, bg='blue')
     Calendar_frame.grid(row=1, column=0, padx=10, pady=5, sticky=NSEW)
 
-    Label(Calendar_frame, text= "Daily View", font= ('Helvetica 20'), fg='black', bg= 'blue').grid(row=0, column=0, padx= (45, 25),  pady=(5,15))
+    Label(Calendar_frame, text= "Daily View", font= ('Helvetica 20'), fg='black', bg= 'blue').grid(row=0, column=0, padx= (35, 25),  pady=(5,15))
+    if len(events) == 0:
+        Label(Calendar_frame, text= "EMPTY", font= ('Helvetica 15'), fg='black', bg= 'blue').grid(row=1, column=0,padx= (10, 0), pady=(10, 2))
+    titlemark = 1
+    timemark1 = 2
+    timemark2 = 3
+    timemark3 = 4
+    timemark4 = 5
+    timemark5 = 6
+    for x in events: 
+        print(x)
+        if(titlemark == 17):
+            break
 
+        temp1 = datetime.utcfromtimestamp(x["When"]['start_time'])
+        temp2 = datetime.utcfromtimestamp(x["When"]['end_time'])
 
-    Label(Calendar_frame, text= "Temp Calendar 1", font= ('Helvetica 15'), fg='black', bg= 'blue').grid(row=1, column=0,padx= (10, 0), pady=(10, 2))
-    Label(Calendar_frame, text= "Placeholder time", font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=2, column=0,padx= (28, 0), pady=(0, 30), sticky=W)
+        utc_timezone = pytz.timezone('UTC')
+        utc_datetime1 = utc_timezone.localize(temp1)
+        utc_datetime2 = utc_timezone.localize(temp2)
 
-    Label(Calendar_frame, text= "Temp Calendar 1", font= ('Helvetica 15'), fg='black', bg= 'blue').grid(row=3, column=0,padx= (10, 0), pady=(10, 2))
-    Label(Calendar_frame, text= "Placeholder time", font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=4, column=0,padx= (28, 0), pady=(0, 30), sticky=W)
+            # Convert to Eastern Time (EST)
+        est_timezone = pytz.timezone('US/Eastern')
+        est_datetime1 = utc_datetime1.astimezone(est_timezone)
+        est_datetime2 = utc_datetime2.astimezone(est_timezone)
 
-    Label(Calendar_frame, text= "Temp Calendar 1", font= ('Helvetica 15'), fg='black', bg= 'blue').grid(row=5, column=0,padx= (10, 0), pady=(10, 2))
-    Label(Calendar_frame, text= "Placeholder time", font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=6, column=0,padx= (28, 0), pady=(0, 60), sticky=W)
+        strt = str(est_datetime1).split(" ")
+        end = str(est_datetime2).split(" ")
+        
+        Label(Calendar_frame, text= x["Title"], font= ('Helvetica 15'), fg='black', bg= 'blue').grid(row=titlemark, column=0,padx= (10, 0), pady=(10, 2))
+        Label(Calendar_frame, text=  strt[0], font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=timemark1, column=0,padx= (10, 0) )
+        Label(Calendar_frame, text=  strt[1], font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=timemark2, column=0,padx= (10, 0) )
+        Label(Calendar_frame, text=  "to", font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=timemark3, column=0,padx= (10, 0) )
+        Label(Calendar_frame, text=  end[0], font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=timemark4, column=0,padx= (10, 0) )
+        Label(Calendar_frame, text=  end[1], font= ('Helvetica 10'), fg='black', bg= 'blue').grid(row=timemark5, column=0,padx= (10, 0), pady=(0, 20) )
+        titlemark = titlemark + 6
+        timemark1 = timemark1 + 6
+        timemark2 = timemark2 + 6
+        timemark3 = timemark3 + 6
+        timemark4 = timemark4 + 6
+        timemark5 = timemark5 + 6
+    
 
     Reminder_frame = Frame(left_frame, width=230, height=250, bg='blue')
     Reminder_frame.grid(row=2, column=0, padx=10, pady=5, sticky=NSEW)
