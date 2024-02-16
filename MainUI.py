@@ -10,6 +10,8 @@ from datetime import datetime, timezone
 from email.header import decode_header
 from nylas import APIClient
 from weather import *
+from requestHandler import *
+import threading
 import os
 from dotenv import load_dotenv
 import pytz
@@ -319,6 +321,9 @@ def main_ui_code(root, welcome_name):
     switch_button = Button(left_frame, text="Switch to calendar", command=lambda: switch_to_calendar(root, welcome_name)).grid(row=4, column=0,padx= (10, 0), pady=(5, 2))
     switch_button1 = Button(left_frame, text="Switch to reminders", command=lambda: switch_to_remin(root, welcome_name)).grid(row=5, column=0,padx= (10, 0), pady=(5, 2))
     switch_button1 = Button(left_frame, text="Switch to maps", command=lambda: switch_to_maps(root, welcome_name)).grid(row=6, column=0,padx= (10, 0), pady=(5, 2))
+
+    #Thread to run request handler at the same time as GUI
+    
     #if statement which constantly returns true to make the timer refresh and tick
     if True:
         update_time()
