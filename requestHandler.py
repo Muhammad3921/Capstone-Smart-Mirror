@@ -73,15 +73,16 @@ def askGPT(command):
             )
     return response_to_user.choices[0].message.content
 
-while True:
-    print("Listening for keyword")
-    if(listen()):
-        getVoiceCommand()
-        command = transcribeCommand()["text"]
-        print("Transcripted command: " + command)
+def startMirror():
+    while True:
+        print("Listening for keyword")
+        if(listen()):
+            getVoiceCommand()
+            command = transcribeCommand()["text"]
+            print("Transcripted command: " + command)
 
-        if("bye" in command.lower()):
-            print("Goodbye sire")
-            break
-        else:
-            print("GPT response to user: " + askGPT(command))
+            if("bye" in command.lower()):
+                print("Goodbye sire")
+                break
+            else:
+                print("GPT response to user: " + askGPT(command))
