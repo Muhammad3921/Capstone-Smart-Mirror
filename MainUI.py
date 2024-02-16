@@ -196,9 +196,15 @@ clock_label = Label(Clock_frame, font= ('Helvetica 30'), fg='black', bg= 'blue')
 clock_label.grid(row=0, column=0,padx=35, pady=25, sticky=NSEW)
 
 Weather_frame = Frame(right_frame, width=230, height=200, bg='blue')
-#Weather_frame = updateGUI(getForecast("Toronto"), Weather_frame)
-Weather_frame.grid(row=1, column=0, padx=10, pady=5, sticky=NSEW)
+Weather_frame = updateGUI(Weather_frame)
 
+def changeWeatherWidget():
+    global Weather_frame
+    Weather_frame = updateGUI(Weather_frame)
+
+Weather_frame.grid(row=1, column=0, padx=10, pady=5, sticky=NSEW)
+root.update()
+print(data['location']['name'])
 Maps_frame = Frame(right_frame, width=230, height=490, bg='blue')
 Maps_frame.grid(row=3, column=0, padx=10, pady=5, sticky=NSEW)
 
@@ -216,7 +222,8 @@ t = threading.Thread(target=startMirror)
 t.start()
 
 #if statement which constantly returns true to make the timer refresh and tick
-if __name__ == "__main__":
+if True:
     update_time()
+    changeWeatherWidget()
     root.mainloop()
     

@@ -57,6 +57,7 @@ def askGPT(command):
 
             if(function_to_call == getCurrentWeather):
                 function_response = function_to_call(location=function_parameters.get("location"))
+                
 
             messages.append(
                 {

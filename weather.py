@@ -6,19 +6,21 @@ import json
 
 API_KEY = "004add7c3feb40a7ab5233650230410" #move to .env file
 
+data = requests.get("http://api.weatherapi.com/v1/current.json?key=%s&q=%s" % (API_KEY, "Toronto")).json()
 def getCurrentWeather(location: str) -> str:
+    global data
     request = "http://api.weatherapi.com/v1/current.json?key=%s&q=%s" % (API_KEY, location)
-    data = requests.get(request)
-    return json.dumps(data.json())
+    data = requests.get(request).json()
+    return json.dumps(data)
 
 #setting hour = -1 or any number outside of [0..24] gets rid of hourly weather
 def getForecast(location: str, days = 3, date = "", hour = "", lang = "") -> str:
-
+    global data
     request = "http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=%d&dt=%s&hour=%s&lang=%s" % (API_KEY, location, days, date, hour, lang)
-    data = requests.get(request)
-    return json.dumps(data.json())
+    data = requests.get(request).json()
+    return json.dumps(data)
 
-def updateGUI(data: dict, frame: Frame) -> Frame:
+def updateGUI(frame: Frame) -> Frame:
     region = data['location']['name']
     temp = "Temperature: %d°" % data['current']['temp_c']
     feelsLike = "Feels like: %d°" % data['current']['feelslike_c']
