@@ -1,13 +1,16 @@
+import struct
 import wave
 import pyaudio
 import requests
+import pvporcupine
+
+authorization_string = 'Bearer 87YDB3F1BAKHUVQGAT5UU5WL2TN9FFAY' #put in .env file
+
 
 #values taken from Nyle's headset microphone
 samplingRate = 48000
 numChannels = 2
 samplingWidth = 2
-
-authorization_string = 'Bearer 87YDB3F1BAKHUVQGAT5UU5WL2TN9FFAY' #put in .env file
 
 def transcribeCommand():
     url = "https://transcribe.whisperapi.com"
@@ -31,17 +34,37 @@ def transcribeCommand():
 
 def getVoiceCommand():
     p =  pyaudio.PyAudio()
+    activeListening = p.open(rate = samplingRate, channels = numChannels, format = p.get_format_from_width(samplingWidth), input = True)
     wf = wave.open("command.wav", 'wb')
     wf.setframerate(samplingRate)
     wf.setnchannels(numChannels)
     wf.setsampwidth(samplingWidth)
 
-    stream = p.open(rate = samplingRate, channels = numChannels, format = p.get_format_from_width(samplingWidth), input = True)
-
     print("Recording")
-    wf.writeframes(stream.read(250000)) #hardcoded number of frames - about 5s of input
+    wf.writeframes(activeListening.read(250000)) #hardcoded number of frames - about 5s of input
     print("Done")
 
-    stream.close()
+    activeListening.close()
     wf.close()
     p.terminate()
+
+def listen():
+    porcupine = pvporcupine.create(
+    access_key='TLe29+hRoKRyhBZ559ZIOT76Hn0kLPUcLEuu7VoaU4AJL/ypDStXlQ==',
+    keywords=['jarvis']
+    )
+    p =  pyaudio.PyAudio()
+    passiveListening = p.open(rate = porcupine.sample_rate, channels = 1, format = pyaudio.paInt16, input = True, frames_per_buffer = porcupine.frame_length)
+    keywordFound = False
+    while (not keywordFound):
+        passiveRecording = passiveListening.read(porcupine.frame_length)
+        passiveRecording = struct.unpack_from("h" * porcupine.frame_length, passiveRecording)
+        keywordIndex = porcupine.process(passiveRecording)
+        if(keywordIndex == 0):
+            print("keyword detected")
+            keywordFound = True
+    
+    passiveListening.close()
+    p.terminate()
+    porcupine.delete()
+    return True
