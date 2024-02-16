@@ -2,20 +2,21 @@ import requests
 from tkinter import *
 from PIL import ImageTk, Image
 import urllib.request
+import json
 
 API_KEY = "004add7c3feb40a7ab5233650230410" #move to .env file
 
-def getCurrentWeather(location: str) -> dict:
+def getCurrentWeather(location: str) -> str:
     request = "http://api.weatherapi.com/v1/current.json?key=%s&q=%s" % (API_KEY, location)
     data = requests.get(request)
-    return data.json()
+    return json.dumps(data.json())
 
 #setting hour = -1 or any number outside of [0..24] gets rid of hourly weather
-def getForecast(location: str, days = 3, date = "", hour = "", lang = "") -> dict:
+def getForecast(location: str, days = 3, date = "", hour = "", lang = "") -> str:
 
     request = "http://api.weatherapi.com/v1/forecast.json?key=%s&q=%s&days=%d&dt=%s&hour=%s&lang=%s" % (API_KEY, location, days, date, hour, lang)
     data = requests.get(request)
-    return data.json()
+    return json.dumps(data.json())
 
 def updateGUI(data: dict, frame: Frame) -> Frame:
     region = data['location']['name']

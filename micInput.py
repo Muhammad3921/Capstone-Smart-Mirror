@@ -63,7 +63,7 @@ def listen():
         if(keywordIndex == 0):
             print("keyword detected")
             keywordFound = True
-      
+    
     passiveListening.close()
     p.terminate()
     porcupine.delete()

@@ -194,7 +194,7 @@ clock_label = Label(Clock_frame, font= ('Helvetica 30'), fg='black', bg= 'blue')
 clock_label.grid(row=0, column=0,padx=35, pady=25, sticky=NSEW)
 
 Weather_frame = Frame(right_frame, width=230, height=200, bg='blue')
-Weather_frame = updateGUI(getForecast("Toronto"), Weather_frame)
+#Weather_frame = updateGUI(getForecast("Toronto"), Weather_frame)
 Weather_frame.grid(row=1, column=0, padx=10, pady=5, sticky=NSEW)
 
 Maps_frame = Frame(right_frame, width=230, height=490, bg='blue')
@@ -210,17 +210,7 @@ Label(Tasks_frame, text= "Weather tonight", font= ('Helvetica 12'), fg='black', 
 Label(Tasks_frame, text= "Set reminder to do work", font= ('Helvetica 12'), fg='black', bg= 'blue').grid(row=3, column=0,padx= (10, 0), pady=(5, 2))
 
 #MIC INPUT
-def runMic():
-    while True:
-        print("in while loop")
-        if(listen()):
-            getVoiceCommand()
-            response = transcribeCommand()
-            print(response["text"])
 
-            if("bye" in response["text"].lower()):
-                print("goodbye sire")
-                break
 
 #if statement which constantly returns true to make the timer refresh and tick
 if __name__ == "__main__":
