@@ -1,5 +1,6 @@
 from tkinter import *
 import time
+import json
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -12,8 +13,12 @@ from weather import *
 import os
 from dotenv import load_dotenv
 import pytz
+from reminder import load_reminders  # Import the load_reminders function
+
 
 load_dotenv()
+
+
 
 CALENDAR_ID = os.getenv("CALENDAR_ID")
 #Calendar func
@@ -22,6 +27,8 @@ nylas = APIClient(
    os.getenv("NYLAS2"),
    os.getenv("NYLAS3")
 )
+
+
 
 def convert_to_unix_timestamp(timedate):
     tempdate = timedate.split(",")
@@ -96,15 +103,11 @@ def switch_to_maps(root, name):
     mapsPage(map, name)
 
 def switch_to_remin(root, name):
-    root.destroy() # Properly destroy the current Tkinter window
-    # Import the Main UI code
+    root.destroy()  # Destroy the current window
     from reminder import reminderPage
-    
-    # Create a new window for the second page
     rem = Tk()
+    reminderPage(rem, name)  # Pass the username to the reminder page
 
-    # Execute the second page code
-    reminderPage(rem, name)
 
 def main_ui_code(root, welcome_name):
     root.title("Smart Mirror Main")  # title of the GUI window
@@ -263,15 +266,29 @@ def main_ui_code(root, welcome_name):
         timemark3 = timemark3 + 6
         timemark4 = timemark4 + 6
         timemark5 = timemark5 + 6
-    
+
 
     Reminder_frame = Frame(left_frame, width=230, height=250, bg='blue')
     Reminder_frame.grid(row=2, column=0, padx=10, pady=5, sticky=NSEW)
-    var1 = IntVar()
 
-    Label(Reminder_frame, text= "Reminders", font= ('Helvetica 20'), fg='black', bg= 'blue').grid(row=0,  column=0, padx= (35, 25),  pady=(5,10))
+    # Reminder frame code
+    Reminder_frame = Frame(left_frame, width=230, height=250, bg='blue')
+    Reminder_frame.grid(row=2, column=0, padx=10, pady=5, sticky=NSEW)
 
-    Checkbutton(Reminder_frame, text='Reminder 1',font=('Helvetica 12'),fg='black', bg= 'blue', variable=var1, onvalue=1, offvalue=0).grid(row=1,  column=0, padx= (20 ,15),  pady=(5,15), sticky=W)
+    Label(Reminder_frame, text="Reminders", font=('Helvetica 20'), fg='black', bg='blue').grid(row=0, column=0,
+                                                                                               padx=(35, 25),
+                                                                                               pady=(5, 10))
+
+    # Load incomplete reminders
+    # Correction in MainUI.py to pass the 'username' argument to 'load_reminders'
+    incomplete_reminders, _ = load_reminders(welcome_name)
+
+    # Dynamically create a checkbutton for each incomplete reminder
+    for i, reminder in enumerate(incomplete_reminders):
+        var = IntVar()
+        Checkbutton(Reminder_frame, text=reminder, font=('Helvetica 12'), fg='black', bg='blue', variable=var,
+                    onvalue=1, offvalue=0).grid(row=i + 1, column=0, padx=(20, 15), pady=(5, 15), sticky=W)
+
 
 
 
