@@ -10,14 +10,17 @@ from datetime import datetime, timezone
 from email.header import decode_header
 from nylas import APIClient
 from weather import *
-from requestHandler import *
+
 import threading
 import os
 from dotenv import load_dotenv
 import pytz
 from reminder import load_reminders  # Import the load_reminders function
 
+import queue
+sharedqueue = queue.Queue()
 
+from requestHandler import *
 load_dotenv()
 
 
@@ -93,16 +96,20 @@ def switch_to_calendar(root, name):
     # Execute the second page code
     calendarPage(cal, name)
 
-def switch_to_maps(root, name):
-    root.destroy() # Properly destroy the current Tkinter window
+def switch_to_maps(root, masterFrame, name):
+    print("pre destory")
+    masterFrame.destroy()
+    #root.destroy() # Properly destroy the current Tkinter window
+    print("post des")
     # Import the Main UI code
+    print("before import")
     from maps import mapsPage
-    
+    print("before new tk")
     # Create a new window for the second page
-    map = Tk()
-
+    #map = Tk()
+    print("before maps page")
     # Execute the second page code
-    mapsPage(map, name)
+    mapsPage(root, name)
 
 def switch_to_remin(root, name):
     root.destroy()  # Destroy the current window
@@ -117,6 +124,8 @@ def main_ui_code(root, welcome_name):
     root.config(bg="black")  # specify background color
     root.wm_attributes('-transparentcolor', '#ab23ff')
 
+    masterFrame = Frame(root, height = 1300, width = 1060, bg = 'black')
+    masterFrame.pack()
     #create_new_calendar_event()
     #read_calendar_events()
         
@@ -199,20 +208,21 @@ def main_ui_code(root, welcome_name):
 
     def update_time():
         current_time = time.strftime('%H:%M:%S')
-        clock_label.config(text=current_time)
-        root.after(1000, update_time)  # Update every 1000 milliseconds (1 second)
+        if(clock_label.winfo_exists()):
+            clock_label.config(text=current_time)
+            root.after(1000, update_time)  # Update every 1000 milliseconds (1 second)
 
     events = read_calendar_events(datetime.now().date())
 
     #Main layout frames
-    left_frame = Frame(root, width=250, height=950, bg='grey')
+    left_frame = Frame(masterFrame, width=250, height=950, bg='grey')
     left_frame.grid(row=0, column=0, padx=10, pady=5,sticky=NSEW )
 
 
-    mid_frame = Frame(root, width=500, height=950, bg='grey')
+    mid_frame = Frame(masterFrame, width=500, height=950, bg='grey')
     mid_frame.grid(row=0, column=2, padx=10, pady=5, sticky=NSEW)
 
-    right_frame = Frame(root, width=250, height=1050, bg='grey')
+    right_frame = Frame(masterFrame, width=250, height=1050, bg='grey')
     right_frame.grid(row=0, column=3, padx=10, pady=5, sticky=NSEW)
 
     #Individual components 
@@ -322,12 +332,23 @@ def main_ui_code(root, welcome_name):
     switch_button1 = Button(left_frame, text="Switch to reminders", command=lambda: switch_to_remin(root, welcome_name)).grid(row=5, column=0,padx= (10, 0), pady=(5, 2))
     switch_button1 = Button(left_frame, text="Switch to maps", command=lambda: switch_to_maps(root, welcome_name)).grid(row=6, column=0,padx= (10, 0), pady=(5, 2))
 
-    #Thread to run request handler at the same time as GUI
     
+    cock = (root, masterFrame, welcome_name)
+    sharedqueue.put(cock)
+    '''
+    #Thread to run request handler at the same time as GUI
+    t = threading.Thread(target=startMirror)
+    t.daemon = True
+    t.start()
+    '''
+
+    
+    update_time()
+    root.mainloop()
     #if statement which constantly returns true to make the timer refresh and tick
-    if True:
-        update_time()
-        root.mainloop()
+    #if True:
+        
+        
 
 # Create the Tkinter root window
 #root = Tk()  # create root window

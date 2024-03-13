@@ -7,11 +7,13 @@ import os
 global counter
 counter = 0
 
+#import queue
+#sharedqueue = queue.Queue()
 # Load the pre-trained Haarcascades face detection model
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 # Open the camera (0 represents the default camera)
-cap = cv2.VideoCapture(0)
+#cap = cv2.VideoCapture(0)
 
 # Initialize Tkinter window
 root = Tk()
@@ -81,7 +83,7 @@ def update_video():
         recognize_face()
 
 # Start updating the video feed
-update_video()
+#update_video()
 
 # Function to handle face recognition
 def recognize_face():
@@ -141,10 +143,18 @@ recognize_button = Button(root, text="Recognize Face", command=recognize_face)
 recognize_button.pack(pady=10)
 
 def switch_to_main_ui(root, name):
-    cap.release()
+    #cap.release()
     root.destroy() # Properly destroy the current Tkinter window
     # Import the Main UI code
     from MainUI import main_ui_code
+    
+    from requestHandler import startMirror
+    import threading
+
+    t = threading.Thread(target=startMirror)
+    #t.daemon = True
+    t.start()
+    
     
     # Create a new window for the second page
     main_ui = Tk()
@@ -162,7 +172,7 @@ switch_button.pack(pady=10)
 root.mainloop()
 
 # Release the camera
-cap.release()
+#cap.release()
 
 # Close all OpenCV windows
 cv2.destroyAllWindows()

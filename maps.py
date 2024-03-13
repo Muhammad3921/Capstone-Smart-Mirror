@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import Frame, ttk
 from PIL import Image, ImageTk
 import requests
 from io import BytesIO
@@ -25,7 +25,7 @@ def switch_to_main_ui(root, name):
     main_ui_code(main_ui, name)
 
 
-def mapsPage(root,name):
+def mapsPage(root, name):
     def build_static_map_url(location1, location2, api_key):
         base_url = "https://maps.googleapis.com/maps/api/staticmap?"
         encoded_location1 = "+".join(location1.split())
@@ -97,16 +97,18 @@ def mapsPage(root,name):
     root.title("Maps")
     root.geometry("800x800")
 
+    masterFrame = Frame(root, height =800, width=800, bg="black")
+    masterFrame.pack()
     # Create a label with the word "Maps"
-    label = tk.Label(root, text="Maps", font=('Helvetica', 14))
+    label = tk.Label(masterFrame, text="Maps", font=('Helvetica', 14))
     label.pack(pady=2)
 
     # Button to trigger the transition to the second page
-    switch_button = tk.Button(root, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, name))
+    switch_button = tk.Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, name))
     switch_button.pack(pady=10)
     
     # Frame for map and directions
-    frame = ttk.Frame(root)
+    frame = ttk.Frame(masterFrame)
     frame.pack(fill=tk.BOTH, expand=True)
 
     # Canvas to display the map
@@ -118,26 +120,26 @@ def mapsPage(root,name):
     directions_text.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
 
     # Entry widgets for origin and destination
-    origin_label = ttk.Label(root, text="Origin:")
+    origin_label = ttk.Label(masterFrame, text="Origin:")
     origin_label.pack(pady=5)
-    origin_entry = ttk.Entry(root, width=50)
+    origin_entry = ttk.Entry(masterFrame, width=50)
     origin_entry.pack(pady=5)
 
-    destination_label = ttk.Label(root, text="Destination:")
+    destination_label = ttk.Label(masterFrame, text="Destination:")
     destination_label.pack(pady=5)
-    destination_entry = ttk.Entry(root, width=50)
+    destination_entry = ttk.Entry(masterFrame, width=50)
     destination_entry.pack(pady=5)
 
     # Dropdown menu for transit mode
     transit_mode_var = tk.StringVar()
-    transit_mode_label = ttk.Label(root, text="Transit Mode:")
+    transit_mode_label = ttk.Label(masterFrame, text="Transit Mode:")
     transit_mode_label.pack(pady=5)
-    transit_mode_menu = ttk.OptionMenu(root, transit_mode_var, "transit", "driving", "transit", "walking", "bicycling")
+    transit_mode_menu = ttk.OptionMenu(masterFrame, transit_mode_var, "transit", "driving", "transit", "walking", "bicycling")
     transit_mode_menu.pack(pady=5)
 
     # Button to show directions
-    show_directions_button = ttk.Button(root, text="Show Directions", command=show_directions)
+    show_directions_button = ttk.Button(masterFrame, text="Show Directions", command=show_directions)
     show_directions_button.pack(pady=5)
    
-    if(True):
-        root.mainloop()
+    #if(True):
+        #root.mainloop()

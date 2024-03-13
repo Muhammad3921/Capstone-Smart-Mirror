@@ -4,13 +4,11 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import json
 
+
 load_dotenv()
 client = OpenAI()
 
-available_functions = {
-    "getCurrentWeather": getCurrentWeather,
 
-}
 tools = [
     {
         "type": "function",
@@ -30,10 +28,29 @@ tools = [
                 ]
             }
         }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "switch_to_maps",
+            "description": "Switches / Goes to the Maps",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": [
+                ]
+            }
+        }
     }
 ]
 def askGPT(command):
-    
+    from MainUI import switch_to_maps, sharedqueue
+    available_functions = {
+        "getCurrentWeather": getCurrentWeather,
+        "switch_to_maps": switch_to_maps,
+
+    }
     messages = [{"role": "user", "content": command}]
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-0613",
@@ -57,7 +74,10 @@ def askGPT(command):
 
             if(function_to_call == getCurrentWeather):
                 function_response = function_to_call(location=function_parameters.get("location"))
-
+            elif(function_to_call == switch_to_maps):
+                cock = sharedqueue.get()
+                function_response = function_to_call(cock[0], cock[1], cock[2])
+                return "switched"
             messages.append(
                 {
                     "tool_call_id": f.id,
@@ -71,7 +91,9 @@ def askGPT(command):
                 model="gpt-3.5-turbo-0613",
                 messages=messages
             )
-    return response_to_user.choices[0].message.content
+        return response_to_user.choices[0].message.content
+    else:
+        return response_message.content
 
 def startMirror():
     while True:
