@@ -9,6 +9,7 @@ client = OpenAI()
 
 available_functions = {
     "getCurrentWeather": getCurrentWeather,
+    "switch_to_maps": sw
 
 }
 tools = [
@@ -27,6 +28,20 @@ tools = [
                 },
                 "required": [
                     "location"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "switch_to_maps",
+            "description": "Switches / Goes to the Maps",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": [
                 ]
             }
         }
@@ -72,7 +87,9 @@ def askGPT(command):
                 model="gpt-3.5-turbo-0613",
                 messages=messages
             )
-    return response_to_user.choices[0].message.content
+        return response_to_user.choices[0].message.content
+    else:
+        return response_message.content
 
 def startMirror():
     while True:
