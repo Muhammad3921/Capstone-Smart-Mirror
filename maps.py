@@ -12,17 +12,17 @@ class HTMLStripper(HTMLParser):
     def handle_data(self, data):
         self.output += data
 
-def switch_to_main_ui(root, name):
-    root.destroy() # Properly destroy the current Tkinter window
+def switch_to_main_ui(root, masterFrame, name):
+    #destroy current frame
+    masterFrame.destroy()
     # Import the Main UI code
     from MainUI import main_ui_code
     
     # Create a new window for the second page
-    main_ui = tk.Tk()
-    main_ui.title("Smart Mirror Main UI")
+    root.title("Smart Mirror Main UI")
 
     # Execute the second page code
-    main_ui_code(main_ui, name)
+    main_ui_code(root, name)
 
 
 def mapsPage(root, name):
@@ -99,12 +99,16 @@ def mapsPage(root, name):
 
     masterFrame = Frame(root, height =800, width=800, bg="black")
     masterFrame.pack()
+
+    from MainUI import sharedqueue
+    cock = (root, masterFrame, name)
+    sharedqueue.put(cock)
     # Create a label with the word "Maps"
     label = tk.Label(masterFrame, text="Maps", font=('Helvetica', 14))
     label.pack(pady=2)
 
     # Button to trigger the transition to the second page
-    switch_button = tk.Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, name))
+    switch_button = tk.Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, masterFrame, name))
     switch_button.pack(pady=10)
     
     # Frame for map and directions

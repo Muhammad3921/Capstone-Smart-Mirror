@@ -23,12 +23,11 @@ def save_reminders(username, incomplete_reminders, complete_reminders):
     with open(reminders_filename, 'w') as file:
         json.dump(data, file, indent=4)
 
-def switch_to_main_ui(root, name):
-    root.destroy()
+def switch_to_main_ui(root, masterFrame, name):
+    masterFrame.destroy()
     from MainUI import main_ui_code
-    main_ui = Tk()
-    main_ui.title("Smart Mirror Main UI")
-    main_ui_code(main_ui, name)
+    root.title("Smart Mirror Main UI")
+    main_ui_code(root, name)
 
 def add_task(username, incomplete_tasks, complete_tasks, task_entry, update_tasks_display):
     task = task_entry.get()
@@ -53,10 +52,13 @@ def reminderPage(root, name):
 
     root.title("Reminders")
     root.geometry("500x700")
-    root.config(bg="white")
 
     main_frame = Frame(root, bg="white")
     main_frame.pack(pady=20, padx=20)
+
+    from MainUI import sharedqueue
+    cock = (root, main_frame, name)
+    sharedqueue.put(cock)
 
     Label(main_frame, text="Reminders", font=('Helvetica 24'), bg='white').pack(pady=10)
 
@@ -95,10 +97,10 @@ def reminderPage(root, name):
 
     update_tasks_display(incomplete_tasks, complete_tasks)
 
-    switch_button = Button(main_frame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, name))
+    switch_button = Button(main_frame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, main_frame, name))
     switch_button.pack(pady=10)
 
-    root.mainloop()
+    
 
 if __name__ == "__main__":
     root = Tk()

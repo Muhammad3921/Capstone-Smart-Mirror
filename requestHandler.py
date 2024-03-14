@@ -65,15 +65,47 @@ tools = [
                 ]
             }
         }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "switch_to_remin",
+            "description": "Switches / Goes to the Reminders page. Shows the user their reminders.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": [
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "switch_to_main_ui",
+            "description": "Switches / Goes to the main UI page. Shows the user the main UI page.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": [
+                ]
+            }
+        }
     }
 ]
 def askGPT(command):
-    from MainUI import sharedqueue, switch_to_maps, switch_to_calendar
+    from MainUI import sharedqueue, switch_to_maps, switch_to_calendar, switch_to_remin
+    from maps import switch_to_main_ui #as maps_to_main
+    #from calendar import switch_to_main_ui as calendar_to_main
+
     available_functions = {
         "getCurrentWeather": getCurrentWeather,
         "switch_to_maps": switch_to_maps,
         "switch_to_calendar": switch_to_calendar,
-
+        "switch_to_remin": switch_to_remin,
+        "switch_to_main_ui": switch_to_main_ui,
     }
     messages = [{"role": "user", "content": command}]
     response = client.chat.completions.create(
@@ -106,6 +138,16 @@ def askGPT(command):
                 cock = sharedqueue.get()
                 function_response = function_to_call(cock[0], cock[1], cock[2])
                 return "switched"
+            elif(function_to_call == switch_to_remin):
+                cock = sharedqueue.get()
+                function_response = function_to_call(cock[0], cock[1], cock[2])
+                return "switched"
+            elif(function_to_call == switch_to_main_ui):
+                cock = sharedqueue.get()
+                function_response = function_to_call(cock[0], cock[1], cock[2])
+                return "switched"
+                '''if(cock[0].title == "Maps"):
+                    function_response = maps.function_to_call(cock[0], cock[1], cock[2])'''
             messages.append(
                 {
                     "tool_call_id": f.id,

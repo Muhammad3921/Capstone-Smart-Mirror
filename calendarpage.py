@@ -85,17 +85,17 @@ def get_previous_monday(date):
     
     return start_of_week
 
-def switch_to_main_ui(root, name):
-    root.destroy() # Properly destroy the current Tkinter window
+def switch_to_main_ui(root, masterFrame, name):
+    #destroy the current frame
+    masterFrame.destroy()
     # Import the Main UI code
     from MainUI import main_ui_code
     
     # Create a new window for the second page
-    main_ui = tk.Tk()
-    main_ui.title("Smart Mirror Main UI")
+    root.title("Smart Mirror Main UI")
 
     # Execute the second page code
-    main_ui_code(main_ui, name)
+    main_ui_code(root, name)
 
 
 def calendarPage(root, name):
@@ -109,6 +109,10 @@ def calendarPage(root, name):
     # Create a frame to hold the schedule
     masterFrame = tk.Frame(root)
     masterFrame.pack(pady=20, padx=20)
+
+    from MainUI import sharedqueue
+    cock = (root, masterFrame, name)
+    sharedqueue.put(cock)
 
     # Create the title and day columns
     days = ['Time', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -185,4 +189,4 @@ def calendarPage(root, name):
         masterFrame.grid_rowconfigure(row, weight=1)
 
     # Button to trigger the transition to the second page
-    switch_button = tk.Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, name)).grid(row=26, column=0,padx= (10, 0), pady=(5, 2))
+    switch_button = tk.Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, masterFrame, name)).grid(row=26, column=0,padx= (10, 0), pady=(5, 2))

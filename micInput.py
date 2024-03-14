@@ -3,9 +3,12 @@ import wave
 import pyaudio
 import requests
 import pvporcupine
+from os import getenv
+from dotenv import load_dotenv
+load_dotenv()
 
-authorization_string = 'Bearer 87YDB3F1BAKHUVQGAT5UU5WL2TN9FFAY' #put in .env file
-
+WHISPER_API_KEY = getenv("WHISPER_API_KEY")
+PORCUPINE_API_KEY = getenv("PORCUPINE_API_KEY")
 
 #values taken from Nyle's headset microphone
 samplingRate = 48000
@@ -15,7 +18,7 @@ samplingWidth = 2
 def transcribeCommand():
     url = "https://transcribe.whisperapi.com"
     headers = {
-    'Authorization': authorization_string
+    'Authorization': WHISPER_API_KEY
     }
     file = {'file': open('command.wav', 'rb')}
     data = {
@@ -50,7 +53,7 @@ def getVoiceCommand():
 
 def listen():
     porcupine = pvporcupine.create(
-    access_key='TLe29+hRoKRyhBZ559ZIOT76Hn0kLPUcLEuu7VoaU4AJL/ypDStXlQ==',
+    access_key= PORCUPINE_API_KEY,
     keywords=['jarvis']
     )
     p =  pyaudio.PyAudio()

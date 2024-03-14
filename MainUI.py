@@ -101,11 +101,10 @@ def switch_to_maps(root, masterFrame, name):
     # Execute the second page code
     mapsPage(root, name)
 
-def switch_to_remin(root, name):
-    root.destroy()  # Destroy the current window
+def switch_to_remin(root, masterFrame, name):
+    masterFrame.destroy()  # Destroy the current window
     from reminder import reminderPage
-    rem = Tk()
-    reminderPage(rem, name)  # Pass the username to the reminder page
+    reminderPage(root, name)  # Pass the username to the reminder page
 
 
 def main_ui_code(root, welcome_name):
@@ -334,7 +333,6 @@ def main_ui_code(root, welcome_name):
 
     
     update_time()
-    root.mainloop()
     #if statement which constantly returns true to make the timer refresh and tick
     #if True:
         

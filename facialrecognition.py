@@ -18,12 +18,14 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 # Initialize Tkinter window
 root = Tk()
 root.title("Facial Recognition Demo")
+masterFrame = Frame(root)
+masterFrame.pack()
 
 # Create a label for displaying the video feed
-video_label = Label(root)
+video_label = Label(masterFrame)
 video_label.pack(pady=20)
 
-welcome_label = Label(root, text="Welcome - Please Look At the Mirror", font=('Helvetica 14 bold'), fg='black')
+welcome_label = Label(masterFrame, text="Welcome - Please Look At the Mirror", font=('Helvetica 14 bold'), fg='black')
 welcome_label.pack(pady=20)
 
 def load_encodings():
@@ -78,7 +80,7 @@ def update_video():
     
     # Call update_video after 1 ms (you can adjust the delay)
     root.after(1, update_video)
-    if counter >= 30:
+    if counter >= 30 and (root.title == "Facial Recognition Demo"):
         counter = 0
         recognize_face()
 
@@ -120,7 +122,7 @@ def recognize_face():
             except Exception as e:
                 print(f"Error saving encoding file: {e}")
             
-            switch_to_main_ui(root, recognized_name)
+            switch_to_main_ui(root, masterFrame, recognized_name)
         else:
             welcome_label.config(text="Hello, New User!")
             
@@ -133,18 +135,18 @@ def recognize_face():
             with open(encoding_file_path, "wb") as file:
                 pickle.dump(CurrentFace, file)  # Save the encoding dump
                 
-            switch_to_main_ui(root, name)
+            switch_to_main_ui(root, masterFrame, name)
 
     except IndexError:
         welcome_label.config(text="No Face Detected")
 
 # Button to trigger face recognition
-recognize_button = Button(root, text="Recognize Face", command=recognize_face)
+recognize_button = Button(masterFrame, text="Recognize Face", command=recognize_face)
 recognize_button.pack(pady=10)
 
-def switch_to_main_ui(root, name):
+def switch_to_main_ui(root, masterFrame, name):
     #cap.release()
-    root.destroy() # Properly destroy the current Tkinter window
+    masterFrame.destroy() # Properly destroy the current Tkinter window
     # Import the Main UI code
     from MainUI import main_ui_code
     
@@ -157,15 +159,13 @@ def switch_to_main_ui(root, name):
     
     
     # Create a new window for the second page
-    main_ui = Tk()
-    main_ui.title("Smart Mirror Main UI")
-
+    root.title("Smart Mirror Main UI")
     # Execute the second page code
-    main_ui_code(main_ui, name)
+    main_ui_code(root, name)
 
 
 # Button to trigger the transition to the second page
-switch_button = Button(root, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, "Test Name"))
+switch_button = Button(masterFrame, text="Switch to Main UI", command=lambda: switch_to_main_ui(root, masterFrame, "Test Name"))
 switch_button.pack(pady=10)
 
 # Start the Tkinter mainloop
