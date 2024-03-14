@@ -85,29 +85,19 @@ def create_new_calendar_event(title,loc,strt,end):
     event.save(notify_participants=True)   
 
 
-def switch_to_calendar(root, name):
-    root.destroy() # Properly destroy the current Tkinter window
+def switch_to_calendar(root, masterFrame, name):
+    #destroy current frame
+    masterFrame.destroy()
     # Import the Main UI code
     from calendarpage import calendarPage
-    
-    # Create a new window for the second page
-    cal = Tk()
-
     # Execute the second page code
-    calendarPage(cal, name)
+    calendarPage(root, name)
 
 def switch_to_maps(root, masterFrame, name):
-    print("pre destory")
+    #destroy current frame
     masterFrame.destroy()
-    #root.destroy() # Properly destroy the current Tkinter window
-    print("post des")
     # Import the Main UI code
-    print("before import")
     from maps import mapsPage
-    print("before new tk")
-    # Create a new window for the second page
-    #map = Tk()
-    print("before maps page")
     # Execute the second page code
     mapsPage(root, name)
 

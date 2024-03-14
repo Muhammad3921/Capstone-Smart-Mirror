@@ -8,7 +8,16 @@ import json
 load_dotenv()
 client = OpenAI()
 
-
+'''
+"root": {
+    "type": "object",
+    "description": "The tKinter object that holds the Graphical User Interface Window."
+},
+"name": {
+    "type": "string",
+    "description": "The name of the user currently using the application."
+}
+'''
 tools = [
     {
         "type": "function",
@@ -18,10 +27,10 @@ tools = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                "location": {
-                    "type": "string",
-                    "description": "The location in which to get weather conditions on"
-                }
+                    "location": {
+                        "type": "string",
+                        "description": "The location in which to get weather conditions on"
+                    }
                 },
                 "required": [
                     "location"
@@ -33,7 +42,21 @@ tools = [
         "type": "function",
         "function":{
             "name": "switch_to_maps",
-            "description": "Switches / Goes to the Maps",
+            "description": "Switches / Goes to the Maps. Shows the user the map page.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": [
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "switch_to_calendar",
+            "description": "Switches / Goes to the Calendar. Shows the user their calendar.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -45,10 +68,11 @@ tools = [
     }
 ]
 def askGPT(command):
-    from MainUI import switch_to_maps, sharedqueue
+    from MainUI import sharedqueue, switch_to_maps, switch_to_calendar
     available_functions = {
         "getCurrentWeather": getCurrentWeather,
         "switch_to_maps": switch_to_maps,
+        "switch_to_calendar": switch_to_calendar,
 
     }
     messages = [{"role": "user", "content": command}]
@@ -75,6 +99,10 @@ def askGPT(command):
             if(function_to_call == getCurrentWeather):
                 function_response = function_to_call(location=function_parameters.get("location"))
             elif(function_to_call == switch_to_maps):
+                cock = sharedqueue.get()
+                function_response = function_to_call(cock[0], cock[1], cock[2])
+                return "switched"
+            elif(function_to_call == switch_to_calendar):
                 cock = sharedqueue.get()
                 function_response = function_to_call(cock[0], cock[1], cock[2])
                 return "switched"
