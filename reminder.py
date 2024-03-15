@@ -3,6 +3,8 @@ from tkinter import messagebox
 import json
 import os
 
+incomplete_tasks = None
+complete_tasks = None
 def load_reminders(username):
     reminders_filename = f"reminders/{username}/{username}_reminders.json"
     if not os.path.exists(reminders_filename):
@@ -29,25 +31,33 @@ def switch_to_main_ui(root, masterFrame, name):
     root.title("Smart Mirror Main UI")
     main_ui_code(root, name)
 
-def add_task(username, incomplete_tasks, complete_tasks, task_entry, update_tasks_display):
-    task = task_entry.get()
+def add_task(task, name):
+    print(task)
+    #from facialrecognition import name
     if task:
         incomplete_tasks.append(task)
         task_entry.delete(0, END)
         update_tasks_display(incomplete_tasks, complete_tasks)
-        save_reminders(username, incomplete_tasks, complete_tasks)  # Save reminders after adding a task
+        save_reminders(name, incomplete_tasks, complete_tasks)  # Save reminders after adding a task
     else:
         messagebox.showwarning("Warning", "The task cannot be empty.")
 
-def complete_task(username, incomplete_tasks, complete_tasks, task, update_tasks_display):
+    return ("Task to be added to reminders: " + task)
+
+def complete_task(task, username):
+    print(task)
     if task in incomplete_tasks:
         incomplete_tasks.remove(task)
         complete_tasks.append(task)
         update_tasks_display(incomplete_tasks, complete_tasks)
         save_reminders(username, incomplete_tasks, complete_tasks)  # Save reminders after completing a task
 
+        return ("Task completed and removed from reminders: " + task)
+    else:
+        return "Task does not exit."
+
 def reminderPage(root, name):
-    global incomplete_tasks, complete_tasks, task_entry
+    global incomplete_tasks, complete_tasks, task_entry, update_tasks_display
     incomplete_tasks, complete_tasks = load_reminders(name)  # Pass the username to load user-specific reminders
 
     root.title("Reminders")
@@ -87,8 +97,7 @@ def reminderPage(root, name):
 
         for task in incomplete_tasks:
             cb = Checkbutton(incomplete_frame, text=task, font=('Helvetica 12'),
-                             command=lambda t=task: complete_task(name, incomplete_tasks, complete_tasks, t,
-                                                                  update_tasks_display))
+                             command=lambda t=task: complete_task(t, name))
             cb.pack(anchor="w", padx=20, pady=2)
 
         for task in complete_tasks:
@@ -102,6 +111,6 @@ def reminderPage(root, name):
 
     
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     root = Tk()
-    reminderPage(root, "User")
+    reminderPage(root, "User")'''

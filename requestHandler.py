@@ -93,12 +93,51 @@ tools = [
                 ]
             }
         }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "add_task",
+            "description": "Adds a task or reminder to the user's reminders. Used when the user wants to reminded of something. Confirm the user's request at the end.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "The task or reminder to be added to the user's list of reminders."
+                    }
+                },
+                "required": [
+                    "task"
+                ]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function":{
+            "name": "complete_task",
+            "description": "Removes a completed task from the list of reminders. Call this whenever a user says they have completed a task. Confirm the user's request at the end.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "The task or reminder that was completed from the user's list of reminders."
+                    }
+                },
+                "required": [
+                    "task"
+                ]
+            }
+        }
     }
 ]
 def askGPT(command):
     from MainUI import sharedqueue, switch_to_maps, switch_to_calendar, switch_to_remin
     from maps import switch_to_main_ui #as maps_to_main
     #from calendar import switch_to_main_ui as calendar_to_main
+    from reminder import add_task, complete_task
 
     available_functions = {
         "getCurrentWeather": getCurrentWeather,
@@ -106,6 +145,8 @@ def askGPT(command):
         "switch_to_calendar": switch_to_calendar,
         "switch_to_remin": switch_to_remin,
         "switch_to_main_ui": switch_to_main_ui,
+        "add_task": add_task,
+        "complete_task": complete_task
     }
     messages = [{"role": "user", "content": command}]
     response = client.chat.completions.create(
@@ -146,8 +187,27 @@ def askGPT(command):
                 cock = sharedqueue.get()
                 function_response = function_to_call(cock[0], cock[1], cock[2])
                 return "switched"
-                '''if(cock[0].title == "Maps"):
-                    function_response = maps.function_to_call(cock[0], cock[1], cock[2])'''
+            elif(function_to_call == add_task):
+                cock = sharedqueue.get()
+                sharedqueue.put(cock)
+                function_response = function_to_call(task = function_parameters.get("task"), name = cock[2])
+            elif(function_to_call == complete_task):
+                from reminder import incomplete_tasks
+                tasks = ", ".join(str(elem) for elem in incomplete_tasks)
+                messages_t = [{
+                    "role": "assistant",
+                    "content": "Return the task, from the list of tasks, that is closest to the prompt. You should return the exact string of the task chosen. List of tasks: " + tasks + ". Prompt: " + function_parameters.get("task")
+                }]
+
+                task = client.chat.completions.create(
+                    model="gpt-3.5-turbo-0613",
+                    messages=messages_t
+                ).choices[0].message.content
+                cock = sharedqueue.get()
+                sharedqueue.put(cock)
+                function_response = function_to_call(task = task, username = cock[2])
+
+            #GPT's response to the request, not the function's return
             messages.append(
                 {
                     "tool_call_id": f.id,

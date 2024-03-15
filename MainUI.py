@@ -318,7 +318,7 @@ def main_ui_code(root, welcome_name):
 
 
     switch_button = Button(left_frame, text="Switch to calendar", command=lambda: switch_to_calendar(root, welcome_name)).grid(row=4, column=0,padx= (10, 0), pady=(5, 2))
-    switch_button1 = Button(left_frame, text="Switch to reminders", command=lambda: switch_to_remin(root, welcome_name)).grid(row=5, column=0,padx= (10, 0), pady=(5, 2))
+    switch_button1 = Button(left_frame, text="Switch to reminders", command=lambda: switch_to_remin(root, masterFrame, welcome_name)).grid(row=5, column=0,padx= (10, 0), pady=(5, 2))
     switch_button1 = Button(left_frame, text="Switch to maps", command=lambda: switch_to_maps(root, welcome_name)).grid(row=6, column=0,padx= (10, 0), pady=(5, 2))
 
     
